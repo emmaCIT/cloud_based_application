@@ -50,7 +50,7 @@
 					
 							<form action="" method="post">
 								<div class="form-group">
-									Please enter your email address: <br />
+									Please Enter your Email Address: <br />
 									<input type="text" class="form-control" name="email" placeholder="Please Enter Your Email"/>
 								</div>
 								<div class="form-group">

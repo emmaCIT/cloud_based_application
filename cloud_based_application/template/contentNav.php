@@ -7,7 +7,7 @@
 					<img alt"Brand" src="images/diary.png" width="30" height="30"> Diabetes Management System
 				</div>
 			</div>
-			<li><a href="profile.php">Home</a></li>
+			<li><a href="patient.php">Home</a></li>
 			<li><a href="memberConnect.php">Connect</a></li>
 			<li><a href="imgGallery.php">Gallery</a></li>
 			<li><a href="music.php">Music</a></li>

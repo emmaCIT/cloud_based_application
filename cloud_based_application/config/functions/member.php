@@ -6,13 +6,13 @@
 		
 	}
 	
-	function mailMember($subject, $body){
+/*	function mailMember($subject, $body){
 			
 		$query = mysql_query("SELECT `email`, `fName` FROM `members` WHERE `allowEmail` = 1 AND `type` = 0");
 		while(($row = mysql_fetch_assoc($query)) !== false){
-			email($row['email'], $subject, "Hello " . $row['fName'] . ",\n\n" . $body . "\n\n- Friends Dairy Application");
+			email($row['email'], $subject, "Hello " . $row['fName'] . ",\n\n" . $body . "\n\n- Diabetes Management System");
 		}
-	}
+	} */
 	
 	
 	
@@ -23,11 +23,13 @@
 		mysql_query("UPDATE `members` SET `profile` = '" . mysql_real_escape_string($file_path) .  "' WHERE  `memberID` = " . (int)$memberID);	
 	}
 	
-	
+	/*
+	 * This function is used to activate the member's account.
+	 */
 	function activate($email, $emailCode) {
 		
 		$email 		=mysql_real_escape_string($email);
-		$emaiLCode =mysql_real_escape_string($emailCode);
+		$emailCode =mysql_real_escape_string($emailCode);
 	
 		if (mysql_result(mysql_query("SELECT COUNT(`memberID`) FROM `members` WHERE `email` = '$email' AND `emailCode` = '$emailCode' AND `active` = 0"), 0) == 1) {
 			//Update user active status.
@@ -47,14 +49,14 @@
 	
 		if ($mode == 'username') {
 	
-			email($email, 'Your username', "Hello " . $memberData['fName'] . ", \n\nYour username is: " . $memberData['username'] . "\n\n-FriendsDiary Application");
+			email($email, 'Your username', "Hello " . $memberData['fName'] . ", \n\nYour username is: " . $memberData['username'] . "\n\n-Diabetes Management System");
 		} else if ($mode == 'password') {
 		
 			$generatedPassword = substr(md5(rand(999, 999999)), 0, 8);
-			changePassword($memberDataata['memberID'], $generatedPassword);
+			changePassword($memberData['memberID'], $generatedPassword);
 	
 			updateMember($memberData['memberID'], array('passwordChange' => '1'));
-			email($email, 'Your password recovery', "Hello " . $memberData['fName'] . ", \n\nYour new password is: " . $generatedPassword . "\n\n-FriendsDiary Application");
+			email($email, 'Your password recovery', "Hello " . $memberData['fName'] . ", \n\nYour new password is: " . $generatedPassword . "\n\n-Diabetes Management System");
 		}
 	}
 	
@@ -65,6 +67,9 @@
 	}
 		
 	
+	/*
+	 * The code below is for logging into the Diabetes Management System and displaying the Member's Data.
+	 */
 	function memberData($memberID){
 		
 		$data = array();
@@ -97,6 +102,12 @@
 		return (mysql_result(mysql_query("SELECT COUNT(`memberID`) FROM `members` WHERE `username` = '$username'"), 0) == 1) ? true : false;
 	}
 	
+	function phoneExists($phonenumber) {
+	    
+	    $phonenumber = sanitize($phonenumber);
+	    return (mysql_result(mysql_query("SELECT COUNT(`memberID`) FROM `members` WHERE `phone_number` = '$phonenumber'"), 0) == 1) ? true : false;
+	}
+	
 	function emailExists($email) {
 		
 		$email = sanitize($email);
@@ -115,6 +126,9 @@
 		return mysql_result(mysql_query("SELECT `memberID` FROM `members` WHERE `username` = '$username'"), 0, 'memberID');
 	}
 	
+	/*
+	 * This is for Logging into the Diabetes Management System.
+	 */
 	function login($username, $password){
 		
 		$memberID = memberidFromUsername($username);
@@ -131,6 +145,9 @@
 		return mysql_fetch_assoc(mysql_query("SELECT * FROM `members` WHERE `memberID` = $login"));
 	}
 	
+	/*
+	 * The code below is for Registering users to the Diabetes Management System.
+	 */
 	function registerMember($registerData) {
 		
 		array_walk($registerData, 'arraySanitize');
@@ -139,10 +156,13 @@
 		$fields = '`' . implode('`, `', array_keys($registerData)) . '`';
 		$data = '\'' . implode('\', \'', $registerData) . '\'';
 
-		mysqli_query("INSERT INTO `members` ($fields) VALUES ($data)");
-		email($registerData['email'], 'Activate your account', "Hello " . $registerData['fName'] . ", \n\nYou need to activate your account, therefore use the link below:\n\nhttp://localhost/FsDProject/FriendsDiary4.0/activate.php?email=" . $registerData['email'] . "&emailCode=" . $registerData['emailCode'] . "\n\n- FriendsDiary Application");
+		mysql_query("INSERT INTO `members` ($fields) VALUES ($data)");
+		email($registerData['email'], 'Activate your account', "Hello " . $registerData['fName'] . ", \n\nYou need to activate your account, therefore use the link below:\n\nhttp://localhost/cloud_based_application/cloud_based_application/activate.php?email=" . $registerData['email'] . "&emailCode=" . $registerData['emailCode'] . "\n\n- Diabetes Management System");
 	}
 	
+	/*
+	 * Updating members' information in the database.
+	 */
 	function updateMember($memberID, $updateData) {
 		
 		$update = array();
@@ -153,39 +173,6 @@
 			$update[] = '`' . $field . '` = \'' . $data . '\'';
 		}
 		mysql_query("UPDATE `members` SET " . implode(', ', $update) . " WHERE `memberID` = $memberID");
-	}
-	
-	function insertDiary($memberID, $diaryData) {
-		
-		array_walk($diaryData, 'arraySanitize');
-	
-		$fields = '`' . implode('`, `', array_keys($diaryData)) . '`';
-		$data = '\'' . implode('\', \'', $diaryData) . '\'';
-
-		mysql_query("INSERT INTO `diarys` ($fields) VALUES ($data)");
-	}
-	
-	
-	function insertContact($memberID, $contactData) {
-		
-		array_walk($contactData, 'arraySanitize');
-	
-		$fields = '`' . implode('`, `', array_keys($contactData)) . '`';
-		$data = '\'' . implode('\', \'', $contactData) . '\'';
-		
-		
-		mysql_query("INSERT INTO `contactstb`  ($fields) VALUES ($data)");
-	}
-	
-	function insertOutpouring($memberID, $outpouringData) {
-
-		array_walk($outpouringData, 'arraySanitize');
-	
-		$fields = '`' . implode('`, `', array_keys($outpouringData)) . '`';
-		$data = '\'' . implode('\', \'', $outpouringData) . '\'';
-		
-
-		mysql_query("INSERT INTO `outpourings`  ($fields) VALUES ($data)");
 	}
 	
 	

@@ -53,7 +53,7 @@ if (empty($_POST) === false) {
         if (preg_match("/\\s/", $_POST['phone_number']) == true) {
             $errors[] = 'Your phone number must not contain any spaces.';
         }
-        if (phone_exists($_POST['phone_number']) === true) {
+        if (phoneExists($_POST['phone_number']) === true) {
             $errors[] = 'Sorry, the phone number \'' . $_POST['phone_number'] . '\' is already in use';
         }
     }

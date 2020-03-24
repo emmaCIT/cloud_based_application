@@ -19,18 +19,21 @@
 	}
 	
 	function secureAdmin(){
-		
-		global $memberData;
-		if($memberData['type'] == 0){
-			header('Location: index.php');
-			exit();
-		}
+	    global $memberData;
+	    if($memberData['type'] == 0){
+	        header('Location: patient.php');
+	    }else if($memberData['type'] == 1){
+	        header('Location: doctor.php');
+	    }else {
+	        header('Location: index.php');
+	    }
+	    exit();
 	}
 	
 	function loggedInRedirect(){
 		
 		if(loggedIn() === true){
-			header('Location: profile.php');
+			header('Location: patient.php');
 			exit();
 		}
 	}
